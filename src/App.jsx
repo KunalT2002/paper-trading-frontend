@@ -66,6 +66,195 @@ const GlobalStyle = () => (
 
     button { cursor: pointer; transition: all 0.15s ease; }
     input  { caret-color: var(--accent); }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────── */
+    .app-shell {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar — desktop default */
+    .sidebar {
+      width: 72px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    /* Main area */
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* Top bar */
+    .top-bar {
+      height: 48px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    /* Tab content wrapper */
+    .tab-content {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+    }
+
+    /* Tab inner scroll */
+    .tab-inner {
+      padding: 24px 28px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* Stat cards row */
+    .stat-cards {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .stat-cards > * {
+      flex: 1 1 140px;
+      min-width: 0;
+    }
+
+    /* Holdings table header/row grid */
+    .holdings-grid {
+      display: grid;
+      grid-template-columns: 1fr 80px 100px 100px 100px 80px;
+      gap: 12px;
+    }
+
+    /* History/Alerts table */
+    .history-grid {
+      display: grid;
+      grid-template-columns: 80px 1fr 80px 110px 110px 140px;
+      gap: 12px;
+    }
+
+    /* Bottom nav — hidden on desktop */
+    .bottom-nav {
+      display: none;
+    }
+
+    /* ── TABLET (≤ 900px) ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .tab-inner {
+        padding: 18px 16px;
+      }
+      .top-bar {
+        padding: 0 16px;
+      }
+    }
+
+    /* ── MOBILE (≤ 640px) ──────────────────────────────────── */
+    @media (max-width: 640px) {
+      .sidebar {
+        display: none;
+      }
+
+      .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        z-index: 50;
+        align-items: stretch;
+      }
+      .bottom-nav button {
+        flex: 1;
+        background: transparent;
+        border: none;
+        border-top: 2px solid transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: var(--muted);
+        transition: all 0.15s;
+        padding: 6px 0;
+        cursor: pointer;
+      }
+      .bottom-nav button.active {
+        color: var(--accent);
+        border-top-color: var(--accent);
+        background: rgba(0,212,170,0.05);
+      }
+      .bottom-nav button span.nav-icon { font-size: 18px; }
+      .bottom-nav button span.nav-label {
+        font-size: 9px;
+        letter-spacing: 0.05em;
+        font-family: var(--font-display);
+        font-weight: 600;
+      }
+
+      .app-shell {
+        height: calc(100vh - 60px);
+      }
+      .tab-inner {
+        padding: 14px 12px;
+        padding-bottom: 24px;
+      }
+      .top-bar {
+        height: 44px;
+        padding: 0 12px;
+      }
+      .top-bar .top-title {
+        font-size: 11px !important;
+      }
+
+      .stat-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .stat-cards > * {
+        flex: unset;
+        min-width: unset;
+      }
+
+      .holdings-grid {
+        grid-template-columns: 1fr 60px 85px 85px 85px 44px;
+        gap: 6px;
+      }
+
+      .section-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        margin-bottom: 16px !important;
+      }
+      .section-header-right {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+      }
+      .section-header-right > * {
+        flex: 1;
+      }
+    }
   `}</style>
 );
 
@@ -302,24 +491,21 @@ function SettingsModal({ onSave, authError }) {
   );
 }
 
+const NAV_ITEMS = [
+  { id: "portfolio", icon: "◈", label: "Portfolio" },
+  { id: "trade",     icon: "⟁", label: "Trade" },
+  { id: "price",     icon: "◎", label: "Quote" },
+  { id: "history",   icon: "≡", label: "History" },
+  { id: "alerts",    icon: "⚡", label: "Perf." },
+];
+
 function Sidebar({ tab, setTab }) {
-  const items = [
-    { id: "portfolio", icon: "◈", label: "Portfolio" },
-    { id: "trade",     icon: "⟁", label: "Trade" },
-    { id: "price",     icon: "◎", label: "Quote" },
-    { id: "history",   icon: "≡", label: "History" },
-    { id: "alerts",    icon: "⚡", label: "Performance" },
-  ];
   return (
-      <div style={{
-        width: 72, background: "var(--surface)", borderRight: "1px solid var(--border)",
-        display: "flex", flexDirection: "column", alignItems: "center",
-        paddingTop: 20, gap: 4, flexShrink: 0
-      }}>
+      <div className="sidebar">
         <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "var(--accent)", marginBottom: 24, letterSpacing: "-0.02em" }}>
           PT
         </div>
-        {items.map(({ id, icon, label }) => (
+        {NAV_ITEMS.map(({ id, icon, label }) => (
             <button key={id} onClick={() => setTab(id)} style={{
               width: 52, height: 52, background: tab === id ? "var(--panel)" : "transparent",
               borderRadius: 10, display: "flex", flexDirection: "column",
@@ -335,15 +521,24 @@ function Sidebar({ tab, setTab }) {
               <span style={{ fontSize: 9, letterSpacing: "0.05em", fontFamily: "var(--font-display)", fontWeight: 600 }}>{label.toUpperCase()}</span>
             </button>
         ))}
-
         <div style={{ marginTop: "auto", marginBottom: 16 }}>
-          <div className="blink" style={{
-            width: 8, height: 8, borderRadius: "50%",
-            background: "var(--accent)", margin: "0 auto"
-          }} />
+          <div className="blink" style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent)", margin: "0 auto" }} />
           <div style={{ fontSize: 8, color: "var(--muted)", marginTop: 4, textAlign: "center" }}>LIVE</div>
         </div>
       </div>
+  );
+}
+
+function BottomNav({ tab, setTab }) {
+  return (
+      <nav className="bottom-nav">
+        {NAV_ITEMS.map(({ id, icon, label }) => (
+            <button key={id} onClick={() => setTab(id)} className={tab === id ? "active" : ""}>
+              <span className="nav-icon">{icon}</span>
+              <span className="nav-label">{label.toUpperCase()}</span>
+            </button>
+        ))}
+      </nav>
   );
 }
 
@@ -398,9 +593,9 @@ function HoldingRow({ h, onSell, onSetLevels, liveOverride }) {
   return (
       <div style={{ borderBottom: "1px solid var(--border)", overflow: "hidden" }}>
         <div onClick={() => setExpanded(!expanded)}
+             className="holdings-grid"
              style={{
-               display: "grid", gridTemplateColumns: "1fr 80px 100px 100px 100px 80px",
-               gap: 12, padding: "14px 20px", cursor: "pointer",
+               padding: "14px 20px", cursor: "pointer",
                transition: "background 0.4s",
                background: flashBg || (expanded ? "var(--panel)" : "transparent")
              }}
@@ -445,7 +640,7 @@ function HoldingRow({ h, onSell, onSetLevels, liveOverride }) {
 
         {expanded && (
             <div className="fade-up" style={{ background: "var(--surface)", padding: "16px 20px", borderTop: "1px solid var(--border)" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
                 {/* Quick Sell */}
                 <div>
                   <div style={{ fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em", marginBottom: 10 }}>QUICK SELL</div>
@@ -587,16 +782,15 @@ function PortfolioTab({ api, userId }) {
   }[liveStatus] ?? { color: "var(--muted)", label: "" };
 
   return (
-      <div style={{ padding: "24px 28px", flex: 1, overflowY: "auto" }}>
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+      <div className="tab-inner">
+        <div className="section-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
           <div>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>
               Portfolio
             </div>
             <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 2 }}>{userId} · NSE Paper Trading</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div className="section-header-right" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {/* Live polling status */}
             <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 8 }}>
               <div style={{
@@ -623,7 +817,7 @@ function PortfolioTab({ api, userId }) {
 
         {/* Stats */}
         {s && (
-            <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
+            <div className="stat-cards">
               <StatCard label="Portfolio Value"  value={fmt(s.portfolio_value)}     delay={0} />
               <StatCard label="Cash Available"   value={fmt(s.cash_balance)}         delay={60} />
               <StatCard label="Total Invested"   value={fmt(s.total_invested)}       delay={120} />
@@ -636,12 +830,12 @@ function PortfolioTab({ api, userId }) {
 
         {/* Holdings Table */}
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
-          <div style={{
-            display: "grid", gridTemplateColumns: "1fr 80px 100px 100px 100px 80px",
-            gap: 12, padding: "10px 20px",
-            background: "var(--panel)", borderBottom: "1px solid var(--border)",
-            fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em"
-          }}>
+          <div className="holdings-grid"
+               style={{
+                 padding: "10px 20px",
+                 background: "var(--panel)", borderBottom: "1px solid var(--border)",
+                 fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em"
+               }}>
             <div>SYMBOL</div>
             <div style={{ textAlign: "right" }}>QTY</div>
             <div style={{ textAlign: "right" }}>AVG COST</div>
@@ -743,7 +937,7 @@ function TradeTab({ api, userId }) {
   ];
 
   return (
-      <div style={{ padding: "24px 28px", flex: 1, overflowY: "auto" }}>
+      <div className="tab-inner">
         <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4 }}>
           Buy Order
         </div>
@@ -913,7 +1107,7 @@ function QuoteTab({ api }) {
   };
 
   return (
-      <div style={{ padding: "24px 28px", flex: 1 }}>
+      <div className="tab-inner">
         <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4 }}>
           Live Quote
         </div>
@@ -990,25 +1184,27 @@ function HistoryTab({ api, userId }) {
   useEffect(() => { load(); }, [load]);
 
   return (
-      <div style={{ padding: "24px 28px", flex: 1, overflowY: "auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div className="tab-inner">
+        <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>Trade History</div>
             <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 2 }}>{trades?.length ?? "…"} trades</div>
           </div>
-          <button onClick={load} style={{
-            padding: "8px 16px", background: "var(--panel)", border: "1px solid var(--border)",
-            color: "var(--text)", borderRadius: 8, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 11
-          }}>⟳ REFRESH</button>
+          <div className="section-header-right">
+            <button onClick={load} style={{
+              padding: "8px 16px", background: "var(--panel)", border: "1px solid var(--border)",
+              color: "var(--text)", borderRadius: 8, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 11
+            }}>⟳ REFRESH</button>
+          </div>
         </div>
 
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
-          <div style={{
-            display: "grid", gridTemplateColumns: "80px 1fr 80px 110px 110px 140px",
-            gap: 12, padding: "10px 20px",
-            background: "var(--panel)", borderBottom: "1px solid var(--border)",
-            fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em"
-          }}>
+          <div className="history-grid"
+               style={{
+                 padding: "10px 20px",
+                 background: "var(--panel)", borderBottom: "1px solid var(--border)",
+                 fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em"
+               }}>
             <div>TYPE</div>
             <div>SYMBOL</div>
             <div style={{ textAlign: "right" }}>QTY</div>
@@ -1030,9 +1226,8 @@ function HistoryTab({ api, userId }) {
           )}
 
           {trades?.map((t, i) => (
-              <div key={t.id} className="fade-up" style={{
-                display: "grid", gridTemplateColumns: "80px 1fr 80px 110px 110px 140px",
-                gap: 12, padding: "13px 20px", borderBottom: "1px solid var(--border)",
+              <div key={t.id} className="fade-up history-grid" style={{
+                padding: "13px 20px", borderBottom: "1px solid var(--border)",
                 animationDelay: `${Math.min(i * 30, 300)}ms`
               }}>
                 <div>
@@ -1121,18 +1316,20 @@ function AlertsTab({ api, userId }) {
   const MIN_W = 1200;
 
   return (
-      <div style={{ padding: "24px 28px", flex: 1, overflowY: "auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div className="tab-inner">
+        <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>Performance</div>
             <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 2 }}>
               {alerts == null ? "…" : alerts.length} events · auto-exited trades from target & stop-loss hits
             </div>
           </div>
-          <button onClick={load} style={{
-            padding: "8px 16px", background: "var(--panel)", border: "1px solid var(--border)",
-            color: "var(--text)", borderRadius: 8, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 11
-          }}>⟳ REFRESH</button>
+          <div className="section-header-right">
+            <button onClick={load} style={{
+              padding: "8px 16px", background: "var(--panel)", border: "1px solid var(--border)",
+              color: "var(--text)", borderRadius: 8, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 11
+            }}>⟳ REFRESH</button>
+          </div>
         </div>
 
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden", overflowX: "auto" }}>
@@ -1319,21 +1516,17 @@ export default function App() {
   return (
       <>
         <GlobalStyle />
-        <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+        <div className="app-shell">
           <Sidebar tab={tab} setTab={setTab} />
 
           {/* Main content */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div className="main-area">
             {/* Top bar */}
-            <div style={{
-              height: 48, background: "var(--surface)", borderBottom: "1px solid var(--border)",
-              display: "flex", alignItems: "center", padding: "0 24px",
-              justifyContent: "space-between", flexShrink: 0
-            }}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "var(--accent)", letterSpacing: "0.1em" }}>
+            <div className="top-bar">
+              <div className="top-title" style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "var(--accent)", letterSpacing: "0.1em" }}>
                 PAPER TRADING DESK · NSE
               </div>
-              <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                 <div style={{ fontSize: 11, color: "var(--muted)" }}>
                   <span style={{ color: "var(--text)" }}>{config.uid}</span>
                 </div>
@@ -1348,7 +1541,7 @@ export default function App() {
             </div>
 
             {/* Tab content */}
-            <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
+            <div className="tab-content">
               {tab === "portfolio" && <PortfolioTab api={api} userId={config.uid} />}
               {tab === "trade"     && <TradeTab api={api} userId={config.uid} />}
               {tab === "price"     && <QuoteTab api={api} />}
@@ -1357,6 +1550,7 @@ export default function App() {
             </div>
           </div>
         </div>
+        <BottomNav tab={tab} setTab={setTab} />
       </>
   );
 }
