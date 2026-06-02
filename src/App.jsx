@@ -825,10 +825,10 @@ function PortfolioTab({ api, userId }) {
             </div>
         )}
 
-        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden", overflowX: "auto" }}>
           <div className="holdings-grid" style={{
             padding: "10px 20px", background: "var(--panel)", borderBottom: "1px solid var(--border)",
-            fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em"
+            fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em", minWidth: 600
           }}>
             <div>SYMBOL</div>
             <div style={{ textAlign: "right" }}>QTY</div>
@@ -1164,10 +1164,10 @@ function HistoryTab({ api, userId }) {
           </div>
         </div>
 
-        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden", overflowX: "auto" }}>
           <div className="history-grid" style={{
             padding: "10px 20px", background: "var(--panel)", borderBottom: "1px solid var(--border)",
-            fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em"
+            fontSize: 10, color: "var(--muted)", letterSpacing: "0.1em", minWidth: 680
           }}>
             <div>TYPE</div>
             <div>SYMBOL</div>
@@ -1190,7 +1190,7 @@ function HistoryTab({ api, userId }) {
           {trades?.map((t, i) => (
               <div key={t.id} className="fade-up history-grid" style={{
                 padding: "13px 20px", borderBottom: "1px solid var(--border)",
-                animationDelay: `${Math.min(i * 30, 300)}ms`
+                animationDelay: `${Math.min(i * 30, 300)}ms`, minWidth: 680
               }}>
                 <div>
               <span style={{
